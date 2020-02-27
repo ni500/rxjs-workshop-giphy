@@ -57,6 +57,7 @@ console.log(`Please place your code below eachinstructions `);
 // STEP 3: Retrieve data from API and presented on the console
 // OPERATOR: fromFetch https://rxjs.dev/api/fetch/fromFetch
 
+
 // elem ref
 const searchBox = document.getElementById("search");
 const paginationLimitBox = document.getElementById("pag");
@@ -80,7 +81,7 @@ searchKeyup$
 
 const paginationSubject = new BehaviorSubject(search_limit);
 const paginationLimit$ = paginationSubject.asObservable();
-
+let pages_number = 0;
 // wait .5s between keyups to emit current value
 paginationLimitKeyup$
   .pipe(
@@ -112,6 +113,13 @@ const giphyApi$ = combineLatest([search$, paginationLimit$]).pipe(
       catchError(err => {
         // Network or other error, handle appropriately
         return of({ error: true, message: err.message });
+      }),
+      map(response => {
+        console.log(response.pagination);
+        pages_number = Math.round(
+          response.pagination.total_count / response.pagination.count
+        );
+        return response;
       })
     );
   })
@@ -128,7 +136,11 @@ giphyApi$.subscribe(response => {
   console.log(search_term);
   console.log(`PAGINATION LIMIT:`);
   console.log(search_limit);
+  console.log(`TOTAL PAGES:`);
+  console.log(pages_number);
 });
+
+// <input type="number" id="pag" placeholder="Cantidad por página" / >
 
 // STEP 4: Retrieve data from API and presented on the console
 // OPERATOR: fromFetch https://rxjs.dev/api/fetch/fromFetch

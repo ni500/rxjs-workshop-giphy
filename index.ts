@@ -5,7 +5,7 @@ import { fromFetch } from "rxjs/fetch";
 import { switchMap, catchError, tap, map, debounceTime } from "rxjs/operators";
 // Workshop sttings
 const title = "RxJS Workshop: Gihpy API";
-const current_presnetation = "Angular Honduras";
+const current_presnetation = "Angular Honduras 🇭🇳";
 // HTML
 const appDiv: HTMLElement = document.getElementById("app");
 // STEP 0: SET API CONFIGURATION
@@ -34,7 +34,6 @@ appDiv.innerHTML = `
 <p><strong>Operators:</strong></p>
 <p><a href="https://rxjs.dev/api/fetch/fromFetch">fromFetch</a></p>
 <p><a href="https://rxjs.dev/api/operators/switchMap">switchMap</a></p>
-
 
 
 <h3>STEP 2: Listen user inputs and reset gifs data</h3>

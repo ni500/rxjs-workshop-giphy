@@ -37,6 +37,9 @@ appDiv.innerHTML = `
 
 <h3>STEP 3: Set pagination</h3>
 <p>OBSERVABLE: <a href="https://rxjs.dev/api/index/function/combineLatest">combineLatest</a></p>
+
+<input type="text" id="pag" / >
+
 <h3>STEP 4: Bonus</h3>
 <p>Use Angular and Angular Material to upload the Gify App to Firbase</p>
 `;
@@ -54,6 +57,7 @@ console.log(`Please place your code below eachinstructions `);
 
 // elem ref
 const searchBox = document.getElementById("search");
+const paginationLimitBox = document.getElementById("pag");
 // streams
 const searchKeyup$ = fromEvent(searchBox, "keyup");
 const searchSubject = new BehaviorSubject(search_term);
@@ -63,6 +67,7 @@ const search$ = searchSubject.asObservable();
 searchKeyup$
   .pipe(
     map((i: any) => {
+      console.log(i);
       const newSearch = i.currentTarget.value;
       searchSubject.next(newSearch);
       return newSearch;
@@ -70,6 +75,23 @@ searchKeyup$
     debounceTime(500)
   )
   .subscribe();
+
+const paginationLimitKeyup$ = fromEvent(paginationLimitBox, "keyup");
+const paginationSubject = new BehaviorSubject(search_limit);
+const painationLimitKeyup$ = paginationSubject.asObservable();
+
+// wait .5s between keyups to emit current value
+painationLimitKeyup$
+  .pipe(
+    map((pag: any) => {
+      console.log(pag);
+      // const newLimit = i.currentTarget.value;
+      //paginationSubject.next(newLimit);
+      // return newLimit;
+    }),
+    debounceTime(500)
+  )
+  .subscribe(console.log);
 
 const giphyApi$ = search$.pipe(
   switchMap((searchInput: any) => {

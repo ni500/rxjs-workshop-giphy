@@ -31,14 +31,13 @@ appDiv.innerHTML = `
 <h3>STEP 2: Listen user inputs and reset gifs data</h3>
 <p>OBSERVABLE: <a href="https://rxjs.dev/api/index/class/BehaviorSubject">BehaviorSubject</a></p>
 
-<p>Buscando: ${search_term}</p>
 <input type="text" id="search" / >
 
 
 <h3>STEP 3: Set pagination</h3>
 <p>OBSERVABLE: <a href="https://rxjs.dev/api/index/function/combineLatest">combineLatest</a></p>
 
-<input type="text" id="pag" / >
+<input type="number" id="pag" / >
 
 <h3>STEP 4: Bonus</h3>
 <p>Use Angular and Angular Material to upload the Gify App to Firbase</p>
@@ -55,11 +54,15 @@ console.log(`Please place your code below eachinstructions `);
 //<h3>STEP 2: Listen user inputs and reset gifs data</h3>
 //<p>OBSERVABLE: <a href="https://rxjs.dev/api/index/class/BehaviorSubject">BehaviorSubject</a></p>
 
+// STEP 3: Retrieve data from API and presented on the console
+// OPERATOR: fromFetch https://rxjs.dev/api/fetch/fromFetch
+
 // elem ref
 const searchBox = document.getElementById("search");
 const paginationLimitBox = document.getElementById("pag");
 // streams
 const searchKeyup$ = fromEvent(searchBox, "keyup");
+const paginationLimitKeyup$ = fromEvent(paginationLimitBox, "keyup");
 const searchSubject = new BehaviorSubject(search_term);
 const search$ = searchSubject.asObservable();
 
@@ -67,7 +70,6 @@ const search$ = searchSubject.asObservable();
 searchKeyup$
   .pipe(
     map((i: any) => {
-      console.log(i);
       const newSearch = i.currentTarget.value;
       searchSubject.next(newSearch);
       return newSearch;
@@ -76,30 +78,29 @@ searchKeyup$
   )
   .subscribe();
 
-const paginationLimitKeyup$ = fromEvent(paginationLimitBox, "keyup");
 const paginationSubject = new BehaviorSubject(search_limit);
-const painationLimitKeyup$ = paginationSubject.asObservable();
+const paginationLimit$ = paginationSubject.asObservable();
 
 // wait .5s between keyups to emit current value
-painationLimitKeyup$
+paginationLimitKeyup$
   .pipe(
-    map((pag: any) => {
-      console.log(pag);
-      // const newLimit = i.currentTarget.value;
-      //paginationSubject.next(newLimit);
-      // return newLimit;
+    map((pagination: any) => {
+      const newLimit = pagination.currentTarget.value;
+      paginationSubject.next(newLimit);
+      return newLimit;
     }),
     debounceTime(500)
   )
-  .subscribe(console.log);
+  .subscribe();
 
-const giphyApi$ = search$.pipe(
-  switchMap((searchInput: any) => {
+const giphyApi$ = combineLatest([search$, paginationLimit$]).pipe(
+  switchMap(([searchInput, paginationLimitInput]: any) => {
     return fromFetch(
-      `${giphyApiURL}/${giphySearchTag}?q=${searchInput}&api_key=${giphyApiKey}&limit=${search_limit}`
+      `${giphyApiURL}/${giphySearchTag}?q=${searchInput}&api_key=${giphyApiKey}&limit=${paginationLimitInput}`
     ).pipe(
       switchMap(response => {
         search_term = searchInput;
+        search_limit = paginationLimitInput;
         if (response.ok) {
           // OK return data
           return response.json();
@@ -110,7 +111,6 @@ const giphyApi$ = search$.pipe(
       }),
       catchError(err => {
         // Network or other error, handle appropriately
-        console.error(err);
         return of({ error: true, message: err.message });
       })
     );
@@ -126,10 +126,9 @@ giphyApi$.subscribe(response => {
   console.log(gifs);
   console.log(`SEARCH TERM:`);
   console.log(search_term);
+  console.log(`PAGINATION LIMIT:`);
+  console.log(search_limit);
 });
-
-// STEP 3: Retrieve data from API and presented on the console
-// OPERATOR: fromFetch https://rxjs.dev/api/fetch/fromFetch
 
 // STEP 4: Retrieve data from API and presented on the console
 // OPERATOR: fromFetch https://rxjs.dev/api/fetch/fromFetch

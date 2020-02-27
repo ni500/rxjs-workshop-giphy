@@ -5,7 +5,7 @@ import { fromFetch } from "rxjs/fetch";
 import { switchMap, catchError, tap, map, debounceTime } from "rxjs/operators";
 // Workshop sttings
 const title = "RxJS Workshop: Gihpy API";
-const current_presnetation = "Angular Honduras";
+const current_presnetation = "Angular Honduras 🇭🇳";
 // HTML
 const appDiv: HTMLElement = document.getElementById("app");
 // STEP 0: SET API CONFIGURATION
@@ -156,7 +156,7 @@ giphyApi$.subscribe(response => {
   console.log(search_term);
   console.log(`PAGINATION LIMIT:`);
   console.log(search_limit);
-  console.log(`PAGES NUMBER:`);
+  console.log(`TOTAL PAGES:`);
   console.log(pages_number);
 });
 
